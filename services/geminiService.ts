@@ -1,8 +1,6 @@
-import { GoogleGenerativeAI } from "@google/genai";
 import { UserAnswers } from "../types";
 
 // Inicializa a API com a chave segura (process.env vem do Vite define)
-// Nota: Se der erro de tipo no typescript, podemos ignorar por agora ou criar declaração
 const API_KEY = process.env.GEMINI_API_KEY || ''; 
 
 export const generateSalesDiagnosis = async (
@@ -15,10 +13,6 @@ export const generateSalesDiagnosis = async (
   }
 
   try {
-    // A nova SDK do Google pode variar, aqui uso uma implementação fetch padrão 
-    // para garantir compatibilidade máxima sem depender da versão exata da SDK instalada
-    // ou usamos a lógica REST se a SDK falhar.
-    
     // Vamos construir o prompt
     let answersSummary = "";
     Object.entries(answers).forEach(([id, option]) => {
@@ -37,7 +31,7 @@ export const generateSalesDiagnosis = async (
       Não dê parabéns. Vá direto ao ponto da dor e da solução.
     `;
 
-    // Chamada direta à API REST do Gemini para evitar problemas de versão de pacote
+    // Chamada direta à API REST do Gemini
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
       {
