@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { QUESTIONS, RESULT_TIERS } from './constants';
 import { Option, QuizState, UserAnswers, ResultTier } from './types';
-import { generateSalesDiagnosis } from './services/geminiService';
 import { 
   ArrowRight, 
   BarChart3, 
@@ -17,7 +16,6 @@ const App: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<UserAnswers>({});
   const [finalScore, setFinalScore] = useState(0);
-  const [aiAnalysis, setAiAnalysis] = useState<string>('');
   const [resultTier, setResultTier] = useState<ResultTier | null>(null);
 
   const handleStart = () => {
@@ -40,15 +38,18 @@ const App: React.FC = () => {
     }
   };
 
-  const finishQuiz = async (finalAnswers: UserAnswers) => {
+  const finishQuiz = (finalAnswers: UserAnswers) => {
+    // Mostra tela de carregamento por 1.5 segundos para dar emoção
     setQuizState('analyzing');
+    
     const totalScore = Object.values(finalAnswers).reduce((acc, curr) => acc + curr.points, 0);
-    setFinalScore(totalScore);
     const tier = RESULT_TIERS.find(t => totalScore >= t.min && totalScore <= t.max) || RESULT_TIERS[0];
-    setResultTier(tier);
-    const analysis = await generateSalesDiagnosis(totalScore, finalAnswers);
-    setAiAnalysis(analysis);
-    setQuizState('result');
+    
+    setTimeout(() => {
+      setFinalScore(totalScore);
+      setResultTier(tier);
+      setQuizState('result');
+    }, 1500);
   };
 
   // --- RENDER HELPERS (Tema Claro: Bege & Navy) ---
@@ -147,7 +148,7 @@ const App: React.FC = () => {
         <div className="absolute inset-0 border-t-4 border-brand-navy-deep/20 rounded-full animate-spin"></div>
         <div className="absolute inset-4 border-t-4 border-brand-navy-deep rounded-full animate-spin direction-reverse"></div>
       </div>
-      <h2 className="text-3xl font-serif font-bold text-brand-navy-deep mb-4">Calculando...</h2>
+      <h2 className="text-3xl font-serif font-bold text-brand-navy-deep mb-4">Calculando Resultado...</h2>
       <p className="text-slate-600 text-lg">A Amanda está analisando suas respostas.</p>
     </div>
   );
@@ -182,19 +183,7 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {aiAnalysis && (
-          <div className="mb-12 bg-white rounded-2xl p-8 border border-brand-beige-200 shadow-lg">
-             <div className="flex items-center gap-3 mb-6">
-                <Sparkles className="text-brand-navy-deep w-6 h-6" />
-                <h3 className="text-xl font-bold text-brand-navy-deep">Análise da Estrategista</h3>
-             </div>
-             <div className="prose prose-slate max-w-none">
-                {aiAnalysis.split('\n').map((line, i) => (
-                  <p key={i} className="mb-2 text-slate-700">{line.replace(/^-\s/, '• ')}</p>
-                ))}
-             </div>
-          </div>
-        )}
+        {/* Removida a secção de Análise de IA */}
 
         <div className="bg-brand-navy-deep text-white rounded-3xl p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
           <div className="relative z-10">
@@ -251,4 +240,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App; 
+export default App;
