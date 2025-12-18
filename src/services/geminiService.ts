@@ -1,7 +1,7 @@
 import { UserAnswers } from "../types";
 
 // Inicializa a API com a chave segura (process.env vem do Vite define)
-const API_KEY = process.env.GEMINI_API_KEY || ''; 
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || ''; 
 
 export const generateSalesDiagnosis = async (
   totalScore: number, 
